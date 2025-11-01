@@ -1,0 +1,115 @@
+### Mini Pokemon API - Tests REST Client
+### Utilisez l'extension "REST Client" pour exécuter ces requêtes
+
+@baseUrl = http://localhost:3000/api
+
+### 1. Vérifier que l'API fonctionne
+GET http://localhost:3000/
+
+### 2. Créer des attaques
+POST {{baseUrl}}/attacks
+Content-Type: application/json
+
+{
+  "name": "Charge",
+  "damage": 15,
+  "usageLimit": 3
+}
+
+###
+POST {{baseUrl}}/attacks
+Content-Type: application/json
+
+{
+  "name": "Flammeche",
+  "damage": 25,
+  "usageLimit": 2
+}
+
+###
+POST {{baseUrl}}/attacks
+Content-Type: application/json
+
+{
+  "name": "Eclair",
+  "damage": 30,
+  "usageLimit": 2
+}
+
+### 3. Voir toutes les attaques
+GET {{baseUrl}}/attacks
+
+### 4. Créer des dresseurs
+POST {{baseUrl}}/trainers
+Content-Type: application/json
+
+{
+  "name": "Ash"
+}
+
+###
+POST {{baseUrl}}/trainers
+Content-Type: application/json
+
+{
+  "name": "Gary"
+}
+
+### 5. Voir tous les dresseurs
+GET {{baseUrl}}/trainers
+
+### 6. Créer des Pokémon
+POST {{baseUrl}}/pokemon
+Content-Type: application/json
+
+{
+  "name": "Pikachu",
+  "maxLifePoints": 100,
+  "trainerId": 1
+}
+
+###
+POST {{baseUrl}}/pokemon
+Content-Type: application/json
+
+{
+  "name": "Charmander",
+  "maxLifePoints": 90,
+  "trainerId": 2
+}
+
+### 7. Voir tous les Pokémon
+GET {{baseUrl}}/pokemon
+
+### 8. Enseigner des attaques aux Pokémon
+POST {{baseUrl}}/pokemon/1/learn-attack/1
+
+###
+POST {{baseUrl}}/pokemon/1/learn-attack/3
+
+###
+POST {{baseUrl}}/pokemon/2/learn-attack/2
+
+### 9. Organiser un combat aléatoire
+POST {{baseUrl}}/battles/random-challenge
+Content-Type: application/json
+
+{
+  "trainer1Id": 1,
+  "trainer2Id": 2
+}
+
+### 10. Arène 1 - 100 combats aléatoires
+POST {{baseUrl}}/battles/arena1
+Content-Type: application/json
+
+{
+  "trainer1Id": 1,
+  "trainer2Id": 2
+}
+
+### 11. Soigner tous les Pokémon d'un dresseur
+POST {{baseUrl}}/trainers/1/heal
+
+### 12. Voir un dresseur spécifique
+GET {{baseUrl}}/trainers/1
