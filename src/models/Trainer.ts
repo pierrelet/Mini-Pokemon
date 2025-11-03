@@ -1,5 +1,5 @@
 import { Pokemon } from './Pokemon';
-import { TrainerData, PokemonData } from '../types';
+import { TrainerData } from '../types';
 
 export class Trainer {
   private id: number;
@@ -13,39 +13,38 @@ export class Trainer {
     this.name = data.name;
     this.level = data.level;
     this.experience = data.experience;
-    this.pokemon = data.pokemon.map(pokemonData => new Pokemon(pokemonData));
+    this.pokemon = data.pokemon.map(p => new Pokemon(p));
   }
 
-  public getId(): number {
+  getId(): number {
     return this.id;
   }
 
-  public getName(): string {
+  getName(): string {
     return this.name;
   }
 
-  public getLevel(): number {
+  getLevel(): number {
     return this.level;
   }
 
-  public getExperience(): number {
+  getExperience(): number {
     return this.experience;
   }
 
-  public getPokemon(): Pokemon[] {
+  getPokemon(): Pokemon[] {
     return this.pokemon;
   }
 
-  public addPokemon(pokemon: Pokemon): boolean {
+  addPokemon(pokemon: Pokemon): void {
     this.pokemon.push(pokemon);
-    return true;
   }
 
-  public healAllPokemon(): void {
-    this.pokemon.forEach(pokemon => pokemon.heal());
+  healAllPokemon(): void {
+    this.pokemon.forEach(p => p.heal());
   }
 
-  public gainExperience(amount: number): void {
+  gainExperience(amount: number): void {
     this.experience += amount;
     while (this.experience >= 10) {
       this.experience -= 10;
@@ -53,50 +52,31 @@ export class Trainer {
     }
   }
 
-  public getRandomPokemon(): Pokemon | null {
-    if (this.pokemon.length === 0) {
-      return null;
-    }
-
-    const alivePokemon = this.pokemon.filter(p => p.isAlive());
-    if (alivePokemon.length === 0) {
-      return null;
-    }
-
-    const randomIndex = Math.floor(Math.random() * alivePokemon.length);
-    return alivePokemon[randomIndex];
+  getRandomPokemon(): Pokemon | null {
+    const alive = this.pokemon.filter(p => p.isAlive());
+    if (alive.length === 0) return null;
+    return alive[Math.floor(Math.random() * alive.length)];
   }
 
-  public getStrongestPokemon(): Pokemon | null {
-    if (this.pokemon.length === 0) {
-      return null;
-    }
-
-    const alivePokemon = this.pokemon.filter(p => p.isAlive());
-    if (alivePokemon.length === 0) {
-      return null;
-    }
-
-    return alivePokemon.reduce((strongest, current) => 
-      current.getLifePoints() > strongest.getLifePoints() ? current : strongest
+  getStrongestPokemon(): Pokemon | null {
+    const alive = this.pokemon.filter(p => p.isAlive());
+    if (alive.length === 0) return null;
+    return alive.reduce((best, current) => 
+      current.getLifePoints() > best.getLifePoints() ? current : best
     );
   }
 
-  public hasAlivePokemon(): boolean {
-    return this.pokemon.some(pokemon => pokemon.isAlive());
+  hasAlivePokemon(): boolean {
+    return this.pokemon.some(p => p.isAlive());
   }
 
-  public getAlivePokemonCount(): number {
-    return this.pokemon.filter(pokemon => pokemon.isAlive()).length;
-  }
-
-  public toData(): TrainerData {
+  toData(): TrainerData {
     return {
       id: this.id,
       name: this.name,
       level: this.level,
       experience: this.experience,
-      pokemon: this.pokemon.map(pokemon => pokemon.toData())
+      pokemon: this.pokemon.map(p => p.toData())
     };
   }
 }

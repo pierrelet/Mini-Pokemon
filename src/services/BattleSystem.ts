@@ -1,9 +1,8 @@
 import { Trainer } from '../models/Trainer';
-import { Pokemon } from '../models/Pokemon';
 import { BattleResult } from '../types';
 
 export class BattleSystem {
-  public static randomChallenge(trainer1: Trainer, trainer2: Trainer): BattleResult {
+  static randomChallenge(trainer1: Trainer, trainer2: Trainer): BattleResult {
     trainer1.healAllPokemon();
     trainer2.healAllPokemon();
 
@@ -20,7 +19,6 @@ export class BattleSystem {
     while (pokemon1.isAlive() && pokemon2.isAlive() && rounds < maxRounds) {
       const attacker = Math.random() < 0.5 ? pokemon1 : pokemon2;
       const defender = attacker === pokemon1 ? pokemon2 : pokemon1;
-
       attacker.attackTarget(defender);
       rounds++;
     }
@@ -39,7 +37,7 @@ export class BattleSystem {
     };
   }
 
-  public static arena1(trainer1: Trainer, trainer2: Trainer): BattleResult {
+  static arena1(trainer1: Trainer, trainer2: Trainer): BattleResult {
     for (let i = 0; i < 100; i++) {
       this.randomChallenge(trainer1, trainer2);
     }
@@ -60,7 +58,6 @@ export class BattleSystem {
         winner = t1Xp > t2Xp ? trainer1 : trainer2;
         loser = winner === trainer1 ? trainer2 : trainer1;
       } else {
-        // Strict tie: fall back to a deterministic choice
         winner = trainer1;
         loser = trainer2;
       }
@@ -77,7 +74,7 @@ export class BattleSystem {
     };
   }
 
-  public static deterministicChallenge(trainer1: Trainer, trainer2: Trainer): BattleResult {
+  static deterministicChallenge(trainer1: Trainer, trainer2: Trainer): BattleResult {
     const pokemon1 = trainer1.getStrongestPokemon();
     const pokemon2 = trainer2.getStrongestPokemon();
 
@@ -91,7 +88,6 @@ export class BattleSystem {
     while (pokemon1.isAlive() && pokemon2.isAlive() && rounds < maxRounds) {
       const attacker = Math.random() < 0.5 ? pokemon1 : pokemon2;
       const defender = attacker === pokemon1 ? pokemon2 : pokemon1;
-
       attacker.attackTarget(defender);
       rounds++;
     }
@@ -110,12 +106,12 @@ export class BattleSystem {
     };
   }
 
-  public static arena2(trainer1: Trainer, trainer2: Trainer): BattleResult {
+  static arena2(trainer1: Trainer, trainer2: Trainer): BattleResult {
     let rounds = 0;
     const maxRounds = 100;
 
     while (trainer1.hasAlivePokemon() && trainer2.hasAlivePokemon() && rounds < maxRounds) {
-      const result = this.deterministicChallenge(trainer1, trainer2);
+      this.deterministicChallenge(trainer1, trainer2);
       rounds++;
     }
 

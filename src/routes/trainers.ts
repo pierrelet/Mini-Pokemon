@@ -1,14 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import { DatabaseService } from '../services/DatabaseService';
-import { Trainer } from '../models/Trainer';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
   try {
     const trainers = await DatabaseService.getAllTrainers();
-    res.json(trainers.map(trainer => trainer.toData()));
+    res.json(trainers.map(t => t.toData()));
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des dresseurs' });
   }
@@ -66,7 +65,6 @@ router.post('/:id/heal', [
 
     trainer.healAllPokemon();
     await DatabaseService.updateTrainer(trainer);
-
     res.json({ message: 'Tous les Pokémon ont été soignés' });
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors du soin des Pokémon' });

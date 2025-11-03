@@ -1,10 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { body, param, validationResult } from 'express-validator';
-import { query } from 'express-validator';
+import { query, validationResult } from 'express-validator';
 import { DatabaseService } from '../services/DatabaseService';
-import { BattleSystem } from '../services/BattleSystem';
 import { Trainer } from '../models/Trainer';
-import { Pokemon } from '../models/Pokemon';
 
 const router = Router();
 
@@ -20,7 +17,6 @@ function sendEvent(res: Response, event: string, data: any) {
   res.write('data: ' + JSON.stringify(data) + '\n\n');
 }
 
-// Défi aléatoire (temps réel)
 router.get('/random-challenge', [
   query('trainer1Id').isInt().withMessage('ID du dresseur 1 doit être un entier'),
   query('trainer2Id').isInt().withMessage('ID du dresseur 2 doit être un entier')
@@ -52,7 +48,7 @@ router.get('/random-challenge', [
     }
 
     sendEvent(res, 'start', {
-      battleType: 'Défi aléatoire (temps réel)',
+      battleType: 'Défi aléatoire',
       trainer1: trainer1.toData(),
       trainer2: trainer2.toData(),
       pokemon1: pokemon1.toData(),
@@ -83,13 +79,13 @@ router.get('/random-challenge', [
       const selected = attacker.attackRandom();
       let attackName = null;
       let damage = 0;
-      let success = false;
+      
       if (selected) {
         attackName = selected.getName();
         damage = selected.getDamage();
         defender.takeDamage(damage);
-        success = true;
       }
+      
       rounds++;
 
       sendEvent(res, 'turn', {
@@ -97,7 +93,6 @@ router.get('/random-challenge', [
         attacker: attacker.getName(),
         defender: defender.getName(),
         defenderLife: defender.getLifePoints(),
-        success,
         attackName,
         damage
       });
@@ -109,7 +104,6 @@ router.get('/random-challenge', [
   }
 });
 
-// Arène 1 (100 combats aléatoires successifs en temps réel)
 router.get('/arena1', [
   query('trainer1Id').isInt().withMessage('ID du dresseur 1 doit être un entier'),
   query('trainer2Id').isInt().withMessage('ID du dresseur 2 doit être un entier')
@@ -128,8 +122,7 @@ router.get('/arena1', [
     }
 
     prepareSSE(res);
-
-    sendEvent(res, 'start', { battleType: 'Arène 1 (temps réel)', trainer1: trainer1.toData(), trainer2: trainer2.toData() });
+    sendEvent(res, 'start', { battleType: 'Arène 1', trainer1: trainer1.toData(), trainer2: trainer2.toData() });
 
     let fights = 0;
     const maxFights = 100;
@@ -142,18 +135,15 @@ router.get('/arena1', [
         const t2Level = trainer2.getLevel();
         let winner: Trainer;
         let loser: Trainer;
+        
         if (t1Level !== t2Level) {
           winner = t1Level > t2Level ? trainer1 : trainer2;
           loser = winner === trainer1 ? trainer2 : trainer1;
         } else {
           const t1Xp = trainer1.getExperience();
           const t2Xp = trainer2.getExperience();
-          if (t1Xp !== t2Xp) {
-            winner = t1Xp > t2Xp ? trainer1 : trainer2;
-            loser = winner === trainer1 ? trainer2 : trainer1;
-          } else {
-            winner = trainer1; loser = trainer2;
-          }
+          winner = t1Xp > t2Xp ? trainer1 : trainer2;
+          loser = winner === trainer1 ? trainer2 : trainer1;
         }
 
         winner.gainExperience(50);
@@ -165,11 +155,11 @@ router.get('/arena1', [
         return res.end();
       }
 
-      // single random challenge without DOM turns, just fight summary
       trainer1.healAllPokemon();
       trainer2.healAllPokemon();
       const p1 = trainer1.getRandomPokemon();
       const p2 = trainer2.getRandomPokemon();
+      
       if (!p1 || !p2) {
         clearInterval(interval);
         sendEvent(res, 'error', { message: 'Un des dresseurs n\'a pas de Pokémon' });
@@ -196,7 +186,6 @@ router.get('/arena1', [
   }
 });
 
-// Défi déterministe (temps réel)
 router.get('/deterministic-challenge', [
   query('trainer1Id').isInt().withMessage('ID du dresseur 1 doit être un entier'),
   query('trainer2Id').isInt().withMessage('ID du dresseur 2 doit être un entier')
@@ -225,7 +214,7 @@ router.get('/deterministic-challenge', [
     }
 
     sendEvent(res, 'start', {
-      battleType: 'Défi déterministe (temps réel)',
+      battleType: 'Défi déterministe',
       trainer1: trainer1.toData(),
       trainer2: trainer2.toData(),
       pokemon1: pokemon1.toData(),
@@ -256,13 +245,13 @@ router.get('/deterministic-challenge', [
       const selected = attacker.attackRandom();
       let attackName = null;
       let damage = 0;
-      let success = false;
+      
       if (selected) {
         attackName = selected.getName();
         damage = selected.getDamage();
         defender.takeDamage(damage);
-        success = true;
       }
+      
       rounds++;
 
       sendEvent(res, 'turn', {
@@ -270,7 +259,6 @@ router.get('/deterministic-challenge', [
         attacker: attacker.getName(),
         defender: defender.getName(),
         defenderLife: defender.getLifePoints(),
-        success,
         attackName,
         damage
       });
@@ -282,7 +270,6 @@ router.get('/deterministic-challenge', [
   }
 });
 
-// Arène 2 (temps réel)
 router.get('/arena2', [
   query('trainer1Id').isInt().withMessage('ID du dresseur 1 doit être un entier'),
   query('trainer2Id').isInt().withMessage('ID du dresseur 2 doit être un entier')
@@ -301,8 +288,7 @@ router.get('/arena2', [
     }
 
     prepareSSE(res);
-
-    sendEvent(res, 'start', { battleType: 'Arène 2 (temps réel)', trainer1: trainer1.toData(), trainer2: trainer2.toData() });
+    sendEvent(res, 'start', { battleType: 'Arène 2', trainer1: trainer1.toData(), trainer2: trainer2.toData() });
 
     let fights = 0;
     const maxFights = 100;
@@ -325,6 +311,7 @@ router.get('/arena2', [
 
       const p1 = trainer1.getStrongestPokemon();
       const p2 = trainer2.getStrongestPokemon();
+      
       if (!p1 || !p2) {
         clearInterval(interval);
         sendEvent(res, 'error', { message: 'Un des dresseurs n\'a pas de Pokémon' });

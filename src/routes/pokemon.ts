@@ -1,7 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import { DatabaseService } from '../services/DatabaseService';
-import { Pokemon } from '../models/Pokemon';
 
 const router = Router();
 
@@ -71,7 +70,6 @@ router.post('/:id/heal', [
 
     pokemon.heal();
     await DatabaseService.updatePokemon(pokemon);
-
     res.json({ message: 'Pokémon soigné' });
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors du soin du Pokémon' });
@@ -101,8 +99,7 @@ router.post('/:id/learn-attack/:attackId', [
       return res.status(404).json({ error: 'Attaque non trouvée' });
     }
 
-    const success = pokemon.learnAttack(attack);
-    if (!success) {
+    if (!pokemon.learnAttack(attack)) {
       return res.status(400).json({ error: 'Le Pokémon ne peut pas apprendre cette attaque' });
     }
 

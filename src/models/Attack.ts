@@ -15,47 +15,41 @@ export class Attack {
     this.usageCount = data.usageCount;
   }
 
-  public getId(): number {
+  getId(): number {
     return this.id;
   }
 
-  public getName(): string {
+  getName(): string {
     return this.name;
   }
 
-  public getDamage(): number {
+  getDamage(): number {
     return this.damage;
   }
 
-  public getUsageLimit(): number {
+  getUsageLimit(): number {
     return this.usageLimit;
   }
 
-  public getUsageCount(): number {
+  getUsageCount(): number {
     return this.usageCount;
   }
 
-  public canUse(): boolean {
+  canUse(): boolean {
     return this.usageCount < this.usageLimit;
   }
 
-  public use(): boolean {
-    if (this.canUse()) {
-      this.usageCount++;
-      return true;
-    }
-    return false;
+  use(): boolean {
+    if (!this.canUse()) return false;
+    this.usageCount++;
+    return true;
   }
 
-  public resetUsage(): void {
+  resetUsage(): void {
     this.usageCount = 0;
   }
 
-  public getInfo(): string {
-    return `${this.name} - Dégâts: ${this.damage}, Usages: ${this.usageCount}/${this.usageLimit}`;
-  }
-
-  public toData(): AttackData {
+  toData(): AttackData {
     return {
       id: this.id,
       name: this.name,

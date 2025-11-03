@@ -1,14 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import { DatabaseService } from '../services/DatabaseService';
-import { Attack } from '../models/Attack';
 
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
   try {
     const attacks = await DatabaseService.getAllAttacks();
-    res.json(attacks.map(attack => attack.toData()));
+    res.json(attacks.map(a => a.toData()));
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération des attaques' });
   }
